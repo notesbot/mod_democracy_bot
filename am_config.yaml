@@ -1,0 +1,245 @@
+##### Democracy Bot AutoMod Config
+##### Created by u/BuckRowdy, with contributions from u/KKingler and u/Sephardson
+##### API Protest Blackout Democratization Moderation Tool Rules - June 28, 2023
+
+---
+
+# Automoderator stickied comment to provide moderation commands on every new post.
+
+   type: submission
+   comment_locked: true
+   comment_stickied: true
+   comment: |
+      **Congratulations!! All members of r/PoliticalHumor are now Moderators!** [Please go here to see how your new privileges work.](https://www.reddit.com/r/PoliticalHumor/comments/14ecgji/breaking_down_barriers_starting_today_all/) 
+
+      Moderator Permissions are given out to regular commenters in the subreddit.  If you are unable to log an action, you need to comment more to gain karma. Spamming mod actions will result in a cooldown and could result in a temp ban.
+      
+      ---
+      
+      **Full Rundown of Moderator Permissions:**
+      
+      - ```!lock``` - As top level comment, will lock comments on any post.
+      - ```!lock``` - Reply to any comment to lock it.
+      - ```!unlock``` - Reply to any comment to unlock the locked comment above it.
+      - ```!remove``` - If reply to a comment, will remove comment.  If reply to a post, will remove post.
+      - ```!restore``` - Comment anywhere to approve any of your removed or locked comments. 
+      - ```!restore u/USERNAME``` - Comment anywhere to approve any removed or locked comments for u/USERNAME.
+      - ```!sticky``` - Sticky the post in the bottom slot. 
+      - ```!ban u/USERNAME``` - Ban a user for 1 day.  Careful: forgetting the username will ban you. 
+      - ```piss``` - Someone will be a piss baby.
+      - ```!woke``` - Copypasta will happen.
+      - ```!leaderboard``` - Get the top 5 most active mods.
+      - ```!mod log``` - Get the full mod log.
+      - ```how to ban users``` - Any user whose comment or post is downvoted to -11 will be temp banned.
+      - ```how to unlock comments``` - Vote the stickied comment on each post to +10 to unlock comments or vote a post past 300.
+ 
+ ---
+### To configure the tier levels for mod perms, set uo four user flairs with blank text, the following four css_classes and your own template ID.  Flair text can be used, but may be confusing for users.  Css class is hidden. 
+### You can define your own css_classes in config.json, or use the ones here, but you must set up and change the template id.
+
+
+ # Set tier 1 karma level "modperms" for moderation perms.  Cannot send any command under this level.
+ type: comment
+ moderators_exempt: false
+ author: 
+     comment_subreddit_karma: ">100"
+     set_flair:
+         text: ""
+         css_class: "modperms"
+         template_id: "78883204-12d0-11ee-9906-c2080dec2575"
+     overwrite_flair: true
+ #comment: "Test comment for new rule feature"
+
+ ---
+
+ # Set tier 2 karma level "restore".  Allows users to restore posts/comments removed or locked by the bot.
+ type: comment
+ moderators_exempt: false
+ author: 
+     comment_subreddit_karma: ">300"
+     set_flair:
+         text: ""
+         css_class: "restore"
+         template_id: "dd323472-1080-11ee-b56a-daf07eadf72c"
+     overwrite_flair: true
+ 
+
+ ---
+
+ # Set tier 3 karma level "remove".  Allows users to remove posts or comments.
+ type: comment
+ moderators_exempt: false
+ author: 
+     combined_subreddit_karma: ">1000"
+     set_flair:
+         text: ""
+         css_class: "remove"
+         template_id: "bcb47008-0fad-11ee-ae32-36eacf9ce8df"
+     overwrite_flair: true
+
+ ---
+
+ # Set tier 4 karma level "fullperms".  Allows users to ban other users for a day.
+ type: comment
+ moderators_exempt: false
+ author: 
+     comment_subreddit_karma: ">2000"
+     set_flair:
+         text: ""
+         css_class: "fullperms"
+         template_id: "88eae498-12d0-11ee-bee8-8e08c4860c12"
+     overwrite_flair: true
+
+ ---
+
+ ### Set up a system to draft users to moderate one post.  Flair css class is assigned allowing them to send a !approve or !remove command.  For approve, automoderator approves post, for remove, the bot will remove it.  Users not allowed to comment further until they send one command.
+
+
+ # Randomly assign users at a 50% percentage based on ending letter of comment ID. Users must have 50 sub level karma. 
+ type: any
+ id (ends-with, regex): ["[a-mA-M0-5]"]
+ body (regex): [".?"]
+ author:
+    comment_subreddit_karma: ">50"
+    set_flair: ["mod perms","probation"]
+ overwrite_flair: true   
+ message: |
+     Congratulations!  You've been selected as a post moderator on r/PoliticalHumor. It's difficult to find willing mods to volunteer their time moderating a subreddit, that's why we need your help!  Before you can comment or post again on the subreddit, you will need to **review one post**.  
+     
+     **How to review a post:** Go to r/politicalhumor/new and review one of the newest posts.  To approve the post, all you have to do is comment ```!approve``` and to remove the post, just type ```!remove```.
+     
+     [**To see how your other mod permissions work, click here.**](http://reddit.com/r/politicalhumor)
+  
+     Thanks for your help!
+
+ ---
+
+ # Remove all content for those with probation flair if comment is not the command.
+ type: any
+ author:
+     flair_css_class: "probation"
+ ~body (regex, includes-word): ["!? ?[Aa]pprove", "!? ?[Rr]emove"]
+ action: remove
+ moderators_exempt: false
+ message: "Command sent incorrectly.  Please try again. The commands are ```!approve``` or ```!remove```"
+
+ ---
+
+ # Remove probation flair if command is "!approve"
+ # Set flair back to the lowest level. Next comment on the sub will set the proper flair class based on sub level karma. 
+ type: comment
+ author:
+     flair_css_class: "probation"
+ body (full-exact, regex): ["!? ?[Aa]pprove"] 
+ parent_submission:
+     action: approve
+     action_reason: "Mod Probation approved post by u/{{author}}"
+ author:
+     set_flair:
+         text: "mod perms"
+         flair_css_class: "modperms"
+         flair_template_id: 78883204-12d0-11ee-9906-c2080dec2575
+     overwrite_flair: true
+ message:  "Thank you for your service, you may return to normal commenting and posting."
+
+ ---
+
+ # Remove probation flair if command is "!remove"
+ # Set flair back to the lowest level. Next comment on the sub will set the proper flair class based on sub level karma. 
+ type: comment
+ author:
+     flair_css_class: "probation"
+ body (full-exact, regex): ["!? ?[Re]move"] 
+ parent_submission:
+     action: remove
+     action_reason: "Mod Probation removed post by u/{{author}}"
+ author:
+     set_flair:
+         text: "mod perms"
+         flair_css_class: "modperms"
+         flair_template_id: 78883204-12d0-11ee-9906-c2080dec2575
+     overwrite_flair: true    
+ message:  "Thank you for your service, you may return to normal commenting and posting."
+ modmail: "Heads up, mod u/{{author}} just removed [this submission]({{permalink}})."
+
+ ---
+
+ # !woke command
+ type: comment
+ body (includes-word, regex): ["! ?[Ww]oke"]
+ comment: | 
+     Joe Biden’s America
+
+     LIBERAL SCHOOL BE LIKE:
+
+     9:00: GAY LESSON!!
+
+     9:45: How to be be GAYY!!
+
+     10:30: TRANS LEARNINNG!!
+
+     11:15: GAY RECESS!!
+
+     11:45: CROSSDRESSING HOUR!!
+
+     12:45: GAY LESSON!!!
+
+     1:30: TRANSGENDER LUNCH!!
+
+     2:15: BLM PERIOD!!!
+
+     3:00: COMMUNIST HISTORY!!
+
+     3:30: TAKE NON BINARY BUS HOME!!
+
+     THIS IS WHAT THE LEFT WANT!
+
+ moderators_exempt: false
+
+ ---
+
+ # Reddit Kills Third Party Apps, now all users are mods.
+
+     type: comment
+     body (includes-word, regex): ["!? ?[Ll]ock", "!? ?[Uu]nlock"]
+     is_top_level: true
+     moderators_exempt: false
+     parent_submission:
+         action_reason: "Comments locked by user-mod u/{{author}}."
+         set_locked: true
+     comment_stickied: true
+     comment: |
+         This thread was y'alled by user-moderator u/{{author}}"
+
+         ---
+
+         **Full Rundown of Moderator Permissions:**
+         
+         - ```!lock``` - As top level comment, will lock comments on any post.
+         - ```!lock``` - Reply to any comment to lock it.
+         - ```!unlock``` - Reply to any comment to unlock the locked comment above it.
+         - ```!remove``` - If reply to a comment, will remove comment.  If reply to a post, will remove post.
+         - ```!restore``` - Comment anywhere to approve any of your removed or locked comments. 
+         - ```!restore u/USERNAME``` - Comment anywhere to approve any removed or locked comments for u/USERNAME.
+         - ```!sticky``` - Sticky the post in the bottom slot. 
+         - ```!ban u/USERNAME``` - Ban a user for 1 day.  Careful: forgetting the username will ban you. 
+         - ```piss``` - Someone will be a piss baby.
+         - ```!woke``` - Copypasta will happen.
+         - ```!leaderboard``` - Get the top 5 most active mods.
+         - ```!mod log``` - Get the full mod log.
+         - ```how to ban users``` - Any user whose comment or post is downvoted to -11 will be temp banned.
+         - ```how to unlock comments``` - Vote the stickied comment on each post to +10 to unlock comments or vote a post past 300.
+         
+ ---
+
+
+     # Remove command if user under comment karma threshold of 50.
+     type: comment
+     body (includes-word, regex): ["! ?[Ll]ock", "! ?[Uu]nlock", "! ?[Re]emove", "! ?[Ss]ticky", "! ?[Bb]an", "! ?[Rr]estore"]
+     author:
+         comment_subreddit_karma: "<50"
+     action: remove
+     comment: "You don't have the proper mod permissions for that action, please level up by commenting in the subreddit."
+     action_reason: "u/{{author}} tried to {{match}} comments but didn't have enough karma. "
+         
+ ---

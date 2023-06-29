@@ -2,9 +2,9 @@
   "subreddits": {
     "politicalhumor": {
       "name": "PoliticalHumor",
-    "ban_message": "Reddit's CEO said in June 2023 that he would like a new system where mods, aka the 'landed gentry' [can be voted out](https://redd.it/14afn3y) by users. Instead of waiting, we've brought pure democracy to r/PoliticalHumor. Any comment/post voted to -11 will incur a 1 day ban.",
+    "ban_message": "Reddit's CEO said in June 2023 that he would like a new system where mods, aka the 'landed gentry' [can be voted out](https://redd.it/14afn3y) by users. Instead of waiting, we've brought pure democracy to r/PoliticalHumor. Any comment/post voted to -11 will incur a [1 day ban.](https://www.reddit.com/r/PoliticalHumor/comments/14liu45/rpoliticalhumor_is_now_applying_nonconsensual/)",
     "ban_command_ban_message": "> You've been banned by a user-moderator.  [Click here to appeal your ban.](https://reddit.com/message/compose?to=evil-operations&subject=I%20would%20like%20to%20appeal%20my%20ban&message=You%20were%20banned%20by%20u%2F{author}.%20%20Type%20your%20appeal%20here%3A%0A)",
-    "removal_reply": "/r/PoliticalHumor is moderated by pure democracy.  Your submission was removed by a trusted user-moderator of the community under our [new moderation policy](https://www.reddit.com/r/PoliticalHumor/comments/14ecgji/breaking_down_barriers_starting_today_all/).",
+    "removal_reply": "/r/PoliticalHumor is moderated by pure democracy.  Your submission was removed by a trusted user-moderator of the community under our [new moderation policy](https://www.reddit.com/r/PoliticalHumor/comments/14liu45/rpoliticalhumor_is_now_applying_nonconsensual/).",
     "submission_list": [
         "14liu45"
       ]
@@ -83,6 +83,11 @@
   "cooldown_list_wiki_page": "banout/lock_list",
   "bot_account_name": "Evil-Operations",
   "mod_harassment_reply_list": [
+    "reddit mods are at the top of the social hierarchy",
+    "Jannie's y'alled my thread just for defending people of land's rights 😭",
+    ">he's a janitor\n\n>on the internet\n\n>on a drama subforum\n\n>he does it for free\n\n>he takes his 'job' very seriously\n\n>he does it because it is the only amount of power & control he will ever have in his pathetic life\n\n>he deletes threads he doesn't like because whenever he gets upset he has an asthma attack\n\n>he deletes threads he doesn't like because they interfere with the large backlog of little girl chinese cartoons he still has to watch\n\n>he will never have a real job>he will never move out of his parent's house\n\n>he will never be at a healthy weight\n\n>he will never know how to cook anything besides a hot pocket\n\n>he will never have a girlfriend\n\n>he will never have any friends\n\n",
+    "Hey everyone come shitpost, looks like the Jannies are too busy eating hot pockets to yeet posts.",
+    "Jannies janny, yall, and 💅 CLEANUP 💅 thread in /r/politicalhumor cause some rightoid went trolling.",
     "Clean it up, jannie.",
     "Do your job, jannie, get to work.",
     "Ok, jannie.",
@@ -95,5 +100,5 @@
     "FOR FREE",
     "Jannies lock thread. The amount of money they were paid to do this: $0.00.",
     "What's it like being a full time employee of Reddit ($0.00 a year)?"],
-  "mod_harassment_footer": "\n\n---\n\n[^(Click here to see why you're being harassed.)](https://www.reddit.com/r/PoliticalHumor/comments/14fpdyl/announcing_updated_moderator_permissions_for_all/)"
+  "mod_harassment_footer": "\n\n---\n\n[^(Click here to see why you're being harassed.)](https://www.reddit.com/r/PoliticalHumor/comments/14liu45/rpoliticalhumor_is_now_applying_nonconsensual/)"
 }

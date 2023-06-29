@@ -227,13 +227,22 @@ def handle_poor_karma_submissions(submission, subreddit):
 	# Check if a post has an upvote ratio of 40% or more and if the post author is already banned.
 	try:
 		submission_upvote_ratio = submission.upvote_ratio
-		submission_author_name = submission.author.name
+		submission_author_name = submission.author
+
 	except Exception as e:
 		logger.error(f"Failed to retrieve upvote ratio or author name for submission id {submission.id} while handling poor karma submission.")
 		return
 
 	if submission_upvote_ratio <= SUBMISSION_VOTE_RATIO_BAN_LIMIT and submission_author_name not in banlist:
 		# Ban user for one day with ban message generated on per sub basis.
+		try:
+			submission.mod.remove()
+			removal_comment = submission.reply(get_removal_reply("politicalhumor"))
+			removal_comment.mod.lock()
+			removal_comment.mod.distinguish(how='yes', sticky=True)
+			logger.info(f"Submission: {submission.title} removed due to .39 score.")
+		except Exception as e:
+			logger.error(f"Couldn't remove submission: [{e}]")	
 		ban_message = get_ban_message("politicalhumor", ban_type= "comment_karma")
 		ban_user(subreddit,
 				 submission.author,
@@ -273,7 +282,7 @@ def ban_user(subreddit, author, duration, ban_reason, ban_message):
 							 ban_message=f"{ban_message}")
 		#logger.info(f'Banned user {author} in r/{subreddit.display_name} for {duration}.')
 		# Add to banlist after successful ban
-		add_to_banlist(subreddit, author.name)
+		add_to_banlist(subreddit, author)
 	except prawcore.exceptions.NotFound as e:
 		# ShadowBanned
 		logger.error(f"Error: {e}, Author: {author}, Comment ID: {comment.id}")	
@@ -338,7 +347,7 @@ def check_comments(subreddit):
 				ban_message=get_ban_message("politicalhumor", ban_type="comment_karma")
 				ban_user(comment.subreddit, comment.author, COMMENT_BAN_DURATION_DAYS, ban_reason=f"{comment.permalink}", ban_message=f"{ban_message}")
 				# Comment.save() is called to keep from removing every comment on the thread.
-				comment.save()
+				comment.mod.remove()
 				logger.info("Saving comment.")
 			# Check for comment commands
 			handle_comment_commands(comment, subreddit)
@@ -566,7 +575,7 @@ def handle_remove_command(comment):
 			# Only add the removal reply if there isn't already a stickied comment by 'bot_account'
 			if not already_stickied:
 				try:
-					removal_comment = submission.reply(get_removal_reply(comment.subreddit))
+					removal_comment = submission.reply(get_removal_reply(f"{comment.subreddit}"))
 					removal_comment.mod.lock()
 					removal_comment.mod.distinguish(how='yes', sticky=True)
 				except Exception as e:
@@ -653,8 +662,11 @@ def handle_piss_command(comment):
 	"""Handles actions after finding piss in a comment.
 	Randomly comment that a conservative politician is a piss baby, choose from a list.
 	"""
-	if not re.match(r"\b[Pp]iss\b", comment.body):
+	if not re.match(r"\b[Pp]iss\b|\b\w+\b is a little piss baby", comment.body, re.IGNORECASE): 	  
 		return
+	if comment.author == os.getenv('BOT_USERNAME'):
+		return 	
+		
 	logger.info(f"u/{comment.author} is taking a piss.")
 	# select a random comeback
 	comeback = random.choice(PISS_BABIES)
@@ -825,7 +837,7 @@ def handle_modlog_command(comment):
 		logger.error(f'Failed to reply to mod log command with error {e}')
 
 def handle_harassment_command(comment):
-	if not re.match(r".*[A-Za-z0-9]$", comment.id) and random.random() < 0.5:
+	if not re.match(r".*[A-Za-z0-9]$", comment.id):  #and random.random() < 2.0:
 		return
 
 	user_scores = load_user_scores(comment.subreddit)
@@ -840,7 +852,7 @@ def mod_harassment(comment, user_scores):
 	"""Randomly check 50 out of the last 1000 comments for a mod "simulation" candidate.  User must have logged an action already and thus opened themselves up for harassment."""
 	reply_list = MOD_HARASSMENT_REPLY_LIST
 	
-	if comment.author != os.getenv('BOT_USERNAME')  and comment.author in user_scores:
+	if comment.author != os.getenv('BOT_USERNAME') and comment.author in user_scores:
 		logger.info(f"Found mod harassment comment candidate: u/{comment.author}")
 		# Choose a random reply from the list
 		reply = random.choice(reply_list)
@@ -952,13 +964,15 @@ def handle_ban_command(comment):
 
 def get_removal_reply(subreddit_display_name):
 	"""Retrieves removal reply from subreddit config."""
-	subreddit_config = config.get('subreddits', {}).get(subreddit_display_name, {})
-	if not subreddit_config.removal_reply:
+
+	subreddit_config = config.get('subreddits', {}).get(f"politicalhumor", {})
+	removal_reply = subreddit_config.get('removal_reply', '')
+	if not removal_reply:
 		logger.error(f"No removal reply found for {subreddit_display_name}")
 		# TODO Better default removal reply
-		return f"Your comment has been removed by {os.getenv('BOT_USERNAME')}."
+		return f"Your content has been removed by {os.getenv('BOT_USERNAME')}."
 	else:
-		return subreddit_config.removal_reply
+		return removal_reply
 
 
 def get_lock_list(subreddit):
